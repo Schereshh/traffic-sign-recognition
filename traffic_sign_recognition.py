@@ -1,15 +1,15 @@
-import base64
-import io
 import os
 
 import cv2
 import keras.models
 import numpy as np
-from werkzeug.utils import secure_filename
 from PIL import Image
 from flask import Flask, request
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+cors = CORS(app)
 
 classes = {
     0: 'Speed limit (20km/h)',
@@ -30,7 +30,6 @@ classes = {
     15: 'No vehicles',
 }
 
-
 @app.route('/api/predict', methods=['POST'])
 def predict():
     f = request.files['image']
@@ -42,7 +41,6 @@ def predict():
     return {
         'message': result
     }
-
 
 def image_recognition(img):
     loaded_model = keras.models.load_model("model/model.h5")
@@ -58,7 +56,6 @@ def image_recognition(img):
     pred = loaded_model.predict(input_data)
     result = pred.argmax()
     return classes[result]
-
 
 if __name__ == "__main__":
     app.run()
